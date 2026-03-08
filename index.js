@@ -173,9 +173,13 @@ async function run() {
       console.log('➡️  Intentando fallback con yt-dlp...');
       spinner.stop();
       const outPath = isAudio ? `${safeTitle}.mp3` : `${safeTitle}.mp4`;
+      // Resolver salida dentro de musicDir (mantener comportamiento si se pasa ruta absoluta en -o)
+      const resolvedOutPath = path.isAbsolute(outPath)
+        ? path.resolve(outPath)
+        : path.resolve(musicDir, outPath);
       try {
-        await downloadWithYtDlp(targetUrl, path.resolve(process.cwd(), outPath), isAudio);
-        console.log(`✅ Descargado con yt-dlp: ${outPath}`);
+        await downloadWithYtDlp(targetUrl, resolvedOutPath, isAudio);
+        console.log(`✅ Descargado con yt-dlp: ${resolvedOutPath}`);
         process.exit(0);
       } catch (e2) {
         console.error('❌ Fallback con yt-dlp falló:', e2.message || e2);
@@ -195,6 +199,10 @@ async function run() {
 function downloadWithYtDlp(url, outputPath, isAudio, rawOutput = false) {
   return new Promise((resolve, reject) => {
     const args = [];
+    
+    // Evitar errores de certificados SSL en yt-dlp (común en macOS)
+    args.push('--no-check-certificates');
+
     if (isAudio) {
       // Extraer audio y convertir a mp3
       args.push('-x', '--audio-format', 'mp3');
