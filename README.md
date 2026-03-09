@@ -52,14 +52,57 @@ ytcli <URL> [opciones]
 
 Opciones principales:
 
+- `-S, --setup`: **Inicializar proyecto** — verifica e instala dependencias (yt-dlp, ffmpeg) según el sistema operativo (macOS, Windows, Linux).
 - `-o, --output <nombre>`: Ruta o nombre del archivo de salida (sin extensión). Si es relativa se guarda dentro del directorio configurado por `--music-dir`.
 - `-a, --audio`: Descargar solo audio y convertir a MP3.
 - `-q, --quality <nivel>`: Calidad de video para `ytdl-core`. Valores esperados: `lowest`, `low`, `medium`, `high`, `highest`. Por defecto: `highest`.
 - `--no-fallback`: No intentar usar `yt-dlp` si falla la descarga con `ytdl-core`.
 - `-d, --folder <nombre>`: Nombre de la carpeta donde guardar una playlist (cuando aplica).
-- `-m, --music-dir, --music-dir <ruta>`: Directorio base donde guardar música/playlists. Por defecto en el proyecto: `/Users/jose/Documents/musica`.
+- `-m, --music-dir <ruta>`: Directorio base donde guardar música/playlists. Por defecto: `/Users/jose/Documents/musica`.
+- `-v, --verbose`: Mostrar salida detallada de yt-dlp (útil para depuración).
 
-Ejemplos:
+## Setup (Inicialización)
+
+Ejecuta el modo setup para preparar el entorno en cualquier sistema operativo:
+
+```bash
+ytcli --setup
+# o
+node index.js --setup
+```
+
+El setup detecta automáticamente tu sistema (macOS, Windows, Linux) y:
+
+1. Verifica si `yt-dlp` está instalado; si no, lo instala usando el gestor de paquetes disponible (brew, winget, pip, apt, etc.).
+2. Verifica si `ffmpeg` está instalado; si no, lo instala.
+3. Verifica las dependencias de Node.js y ejecuta `npm install` si es necesario.
+4. Muestra instrucciones manuales si la instalación automática falla.
+
+Ejemplo de salida:
+
+```
+  ♪ YouTube Downloader CLI
+  ─────────────────────────
+
+  🔧 Modo Setup
+     Verificando e instalando dependencias...
+
+  📍 Sistema detectado: macos
+
+  ✔ yt-dlp está instalado
+  ✔ ffmpeg está instalado
+  ✔ Dependencias de Node.js instaladas
+
+  ─────────────────────────
+
+  ✔ Setup completado correctamente
+
+  Ahora puedes usar:
+  ytcli <URL> -a  (descargar audio)
+  ytcli <URL>     (descargar video)
+```
+
+## Ejemplos
 
 - Descargar video (mejor calidad):
 
