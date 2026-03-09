@@ -1,246 +1,154 @@
 # YouTube Downloader CLI
 
-Pequeña herramienta de línea de comandos para descargar videos o extraer audio (MP3) desde YouTube.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## Resumen rápido
+Herramienta de línea de comandos para descargar videos y audio desde YouTube.
 
-- Soporta descarga de un solo video o audio.
-- Maneja playlists delegando a `yt-dlp` (fallback o obligatorio cuando corresponde).
-- Usa `ytdl-core` para descargas de un solo video y `ffmpeg` (a través de `fluent-ffmpeg`) para convertir audio a MP3.
-- Provee opciones para nombrado de salida, calidad, y directorios personalizados.
-
-## Requisitos
-
-- Node.js (>=14)
-- npm o yarn
-- `ffmpeg` (recomendado). El proyecto incluye `ffmpeg-static`, pero para mayor compatibilidad es recomendable instalar `ffmpeg` en el sistema.
-
-En macOS con Homebrew:
+## ⚡ Inicio rápido
 
 ```bash
-brew install ffmpeg
-```
-
-## Instalación
-
-Desde la carpeta del proyecto:
-
-```bash
+# 1. Clonar el repositorio
+git clone https://github.com/summuva/youtube-downloader-cli.git
 cd youtube-downloader-cli
+
+# 2. Instalar dependencias de Node
 npm install
-# o
-# yarn
-```
 
-Instalación global (opcional):
-
-```bash
-# dentro del repo
-npm link
-# ahora puedes usar `ytcli` desde cualquier directorio
-```
-
-## Uso
-
-Sintaxis básica:
-
-```bash
-node index.js <URL> [opciones]
-# o si instalaste globalmente
-ytcli <URL> [opciones]
-```
-
-Opciones principales:
-
-- `-S, --setup`: **Inicializar proyecto** — verifica e instala dependencias (yt-dlp, ffmpeg) según el sistema operativo (macOS, Windows, Linux).
-- `-o, --output <nombre>`: Ruta o nombre del archivo de salida (sin extensión). Si es relativa se guarda dentro del directorio configurado por `--music-dir`.
-- `-a, --audio`: Descargar solo audio y convertir a MP3.
-- `-q, --quality <nivel>`: Calidad de video para `ytdl-core`. Valores esperados: `lowest`, `low`, `medium`, `high`, `highest`. Por defecto: `highest`.
-- `--no-fallback`: No intentar usar `yt-dlp` si falla la descarga con `ytdl-core`.
-- `-d, --folder <nombre>`: Nombre de la carpeta donde guardar una playlist (cuando aplica).
-- `-m, --music-dir <ruta>`: Directorio base donde guardar música/playlists. Por defecto: `/Users/jose/Documents/musica`.
-- `-v, --verbose`: Mostrar salida detallada de yt-dlp (útil para depuración).
-
-## Setup (Inicialización)
-
-Ejecuta el modo setup para preparar el entorno en cualquier sistema operativo:
-
-```bash
-ytcli --setup
-# o
+# 3. Ejecutar setup (instala yt-dlp y ffmpeg automáticamente)
 node index.js --setup
+
+# 4. (Opcional) Instalar globalmente
+npm link
+
+# 5. ¡Listo! Descargar audio
+ytcli "https://www.youtube.com/watch?v=VIDEO_ID" -a
 ```
 
-El setup detecta automáticamente tu sistema (macOS, Windows, Linux) y:
+## 📦 Requisitos
 
-1. Verifica si `yt-dlp` está instalado; si no, lo instala usando el gestor de paquetes disponible (brew, winget, pip, apt, etc.).
-2. Verifica si `ffmpeg` está instalado; si no, lo instala.
-3. Verifica las dependencias de Node.js y ejecuta `npm install` si es necesario.
-4. Muestra instrucciones manuales si la instalación automática falla.
+- **Node.js** >= 16
+- **yt-dlp** (se instala automáticamente con `--setup`)
+- **ffmpeg** (se instala automáticamente con `--setup`)
 
-Ejemplo de salida:
+## 🔧 Instalación manual de dependencias
+
+Si el setup automático falla, instala manualmente:
+
+### macOS
+```bash
+brew install yt-dlp ffmpeg
+```
+
+### Windows
+```bash
+winget install yt-dlp FFmpeg
+# o con scoop:
+scoop install yt-dlp ffmpeg
+```
+
+### Linux (Debian/Ubuntu)
+```bash
+pip3 install -U yt-dlp
+sudo apt install ffmpeg
+```
+
+## 🎵 Uso
+
+### Descargar audio (MP3)
+```bash
+ytcli "https://www.youtube.com/watch?v=VIDEO_ID" -a
+```
+
+### Descargar video
+```bash
+ytcli "https://www.youtube.com/watch?v=VIDEO_ID"
+```
+
+### Descargar playlist completa
+```bash
+ytcli "https://www.youtube.com/playlist?list=PLAYLIST_ID" -a -d "mi_playlist"
+```
+
+### Especificar carpeta de destino
+```bash
+ytcli "URL" -a -m ~/Downloads/musica
+```
+
+## ⚙️ Opciones
+
+| Opción | Alias | Descripción |
+|--------|-------|-------------|
+| `--setup` | `-S` | Instalar dependencias (yt-dlp, ffmpeg) |
+| `--audio` | `-a` | Descargar solo audio (MP3) |
+| `--output` | `-o` | Nombre del archivo de salida |
+| `--folder` | `-d` | Nombre de carpeta para playlist |
+| `--music-dir` | `-m` | Directorio base de descargas |
+| `--quality` | `-q` | Calidad de video (highest, high, medium, low, lowest) |
+| `--verbose` | `-v` | Mostrar salida detallada |
+| `--no-fallback` | | No usar yt-dlp como alternativa |
+| `--help` | | Mostrar ayuda |
+
+## 📁 Carpeta de descargas por defecto
+
+Los archivos se guardan en:
+- **macOS/Linux**: `~/Music/ytcli-downloads/`
+- **Windows**: `C:\Users\TuUsuario\Music\ytcli-downloads\`
+
+Puedes cambiarla con `-m <ruta>`.
+
+## 🎨 Interfaz visual
+
+La herramienta muestra una interfaz limpia con:
+- Spinner animado durante la descarga
+- Nombre de la canción actual
+- Progreso en porcentaje
+- Resumen al finalizar
 
 ```
   ♪ YouTube Downloader CLI
   ─────────────────────────
 
-  🔧 Modo Setup
-     Verificando e instalando dependencias...
+  📁 Carpeta: ~/Music/ytcli-downloads/mi_playlist
+  🎵 Formato: MP3 (audio)
 
-  📍 Sistema detectado: macos
+  🎵 Nombre de la Canción
+  ⠋ Descargando (3/15) 67%
 
-  ✔ yt-dlp está instalado
-  ✔ ffmpeg está instalado
-  ✔ Dependencias de Node.js instaladas
-
-  ─────────────────────────
-
-  ✔ Setup completado correctamente
-
-  Ahora puedes usar:
-  ytcli <URL> -a  (descargar audio)
-  ytcli <URL>     (descargar video)
+  ✔ Playlist descargada correctamente
 ```
 
-## Ejemplos
-
-- Descargar video (mejor calidad):
+## 🛠️ Desarrollo
 
 ```bash
-node index.js "https://www.youtube.com/watch?v=VIDEO_ID"
-```
-
-- Descargar solo audio y convertir a MP3:
-
-```bash
-node index.js "https://www.youtube.com/watch?v=VIDEO_ID" -a
-```
-
-- Guardar con nombre específico:
-
-```bash
-node index.js "https://www.youtube.com/watch?v=VIDEO_ID" -o "mi_cancion"
-```
-
-- Forzar que no haga fallback a `yt-dlp` (útil si quieres fallar rápido):
-
-```bash
-node index.js "https://www.youtube.com/watch?v=VIDEO_ID" --no-fallback
-```
-
-## Playlists
-
-Si pasas una URL de playlist, el script detecta la lista y usará `yt-dlp` para descargarla (porque `ytdl-core` no gestiona playlists). Puedes controlar el nombre de la carpeta con `-d/--folder` y el directorio base con `-m/--music-dir`.
-
-El patrón de salida para playlists es: `<music-dir>/<folder>/%(playlist_index)s - %(title)s.%(ext)s`.
-
-Si no quieres que el script use `yt-dlp` como fallback/gestor de playlists, pasa `--no-fallback` (en ese caso la descarga de playlists fallará intencionadamente).
-
-## Comportamiento interno (contrato breve)
-
-- Entrada: una URL de YouTube (video o playlist) y opciones CLI.
-- Salida: un archivo `.mp4` (video) o `.mp3` (audio) guardado en el disco, o una carpeta con los archivos de una playlist.
-- Errores: el proceso retorna exit code != 0 y escribe mensajes en stderr si falla (URL inválida, fallos de red, problemas con ffmpeg o yt-dlp).
-
-## Dependencias importantes
-
-- `@distube/ytdl-core` — descargas de vídeo/audio (single videos).
-- `ffmpeg-static` y `fluent-ffmpeg` — conversión a MP3.
-- `yargs` — parsing de opciones CLI.
-- `yt-dlp` (instalación externa recomendada) — manejo de playlists y fallback cuando `ytdl-core` falla.
-
-El proyecto define un `bin` llamado `ytcli` en `package.json`, por lo que después de `npm link` el comando estará disponible globalmente.
-
-## Solución de problemas
-
-- Si falla la extracción/decipher con `ytdl-core` (errores relacionados con tokens, 403, parsing), el script intentará usar `yt-dlp` como fallback (a menos que pases `--no-fallback`). Instala `yt-dlp` en tu sistema si planeas descargar playlists o usar fallback:
-
-```bash
-pip install -U yt-dlp
-# o descargar el binario precompilado
-```
-
-- Si no encuentras `ffmpeg` o hay errores durante la conversión a MP3, instala `ffmpeg` en tu sistema (ver sección Requisitos).
-
-## Ejemplo práctico rápido
-
-```bash
-# Descargar audio de una URL y guardarlo en el directorio por defecto
-node index.js "https://www.youtube.com/watch?v=dQw4w9WgXcQ" -a
-
-# Descargar playlist (usará yt-dlp)
-node index.js "https://www.youtube.com/playlist?list=YOUR_LIST_ID" -d "MiPlaylist"
-```
-
-## Contribuir
-
-PRs y issues bienvenidos. Si vas a proponer cambios importantes, abre antes un issue para discutir el alcance.
-
-## Licencia
-
-Licencia ISC (igual que en `package.json`) y recuerda respetar las leyes y los términos de servicio al descargar contenidos.
-# YouTube Downloader CLI
-
-Pequeño CLI para descargar videos o audio desde YouTube.
-
-Requisitos:
-- Node.js (>=14)
-- npm o yarn
-- ffmpeg (recomendado) — el proyecto usa `ffmpeg-static` pero para mejores compatibilidades puedes instalar `ffmpeg` en tu sistema.
-
-Instalación:
-
-```bash
-# desde la carpeta del proyecto
+# Clonar
+git clone https://github.com/summuva/youtube-downloader-cli.git
 cd youtube-downloader-cli
+
+# Instalar dependencias
 npm install
-# o con yarn
-# yarn
-```
 
-Nota sobre ffmpeg:
-- En macOS puedes instalar ffmpeg con Homebrew:
+# Ejecutar localmente
+node index.js "URL" -a
 
-```bash
-brew install ffmpeg
-```
-
-Uso:
-
-- Descargar video (por defecto en la mejor calidad):
-
-```bash
-node index.js "https://www.youtube.com/watch?v=VIDEO_ID"
-```
-
-- Descargar solo audio y convertir a MP3:
-
-```bash
-node index.js "https://www.youtube.com/watch?v=VIDEO_ID" -a
-```
-
-- Especificar nombre de salida (sin extensión):
-
-```bash
-node index.js "https://www.youtube.com/watch?v=VIDEO_ID" -o "mi_nombre"
-```
-
-- Elegir calidad de video (lowest, low, medium, high, highest):
-
-```bash
-node index.js "https://www.youtube.com/watch?v=VIDEO_ID" -q high
-```
-
-Instalación global (opcional):
-
-```bash
-# desde la carpeta del proyecto
+# Vincular globalmente para desarrollo
 npm link
-# ahora puedes usar el comando ytcli en cualquier lugar
-ytcli "https://www.youtube.com/watch?v=VIDEO_ID" -a
 ```
 
-Notas de seguridad y legales:
-- Asegúrate de tener permiso para descargar y almacenar contenidos. Respeta los términos de servicio de YouTube.
+## 🐛 Solución de problemas
 
-Contribuciones bienvenidas.
+### Error SSL Certificate Verify Failed
+El setup incluye `--no-check-certificates` para evitar problemas de SSL en macOS.
+
+### Error 403 o decipher
+Si `ytdl-core` falla, el script automáticamente usa `yt-dlp` como fallback.
+
+### ffmpeg no encontrado
+Ejecuta `ytcli --setup` o instala manualmente según tu sistema operativo.
+
+## 📄 Licencia
+
+[MIT License](LICENSE) - ver archivo LICENSE para más detalles.
+
+---
+
+**Nota legal**: Asegúrate de tener permiso para descargar y almacenar contenidos. Respeta los términos de servicio de YouTube.

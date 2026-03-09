@@ -333,7 +333,7 @@ const argv = yargs(hideBin(process.argv))
     alias: "m",
     describe: "Directorio base donde guardar la música/playlists (se crea si no existe)",
     type: "string",
-    default: "/Users/jose/Documents/musica",
+    default: path.join(os.homedir(), "Music", "ytcli-downloads"),
   })
   .option("verbose", {
     alias: "v",
